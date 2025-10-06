@@ -2,6 +2,7 @@
 
 
 // this is a comment
+// this is another commit for the second time
 
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
