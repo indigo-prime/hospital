@@ -1,0 +1,287 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ===== Enums =====
+enum Role {
+  USER
+  OWNER
+  ADMIN
+}
+
+enum Mood {
+  RELAXED
+  ROMANTIC
+  ADVENTUROUS
+  FAMILY_FRIENDLY
+  BUSINESS
+  HISTORICAL
+  SHOPPING
+  EDUCATIONAL
+  CULTURAL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum MainCategoryEnum {
+  FOOD_PACK
+  FAMILY_AND_KIDS
+  NIGHT_LIFE
+  ARTS_AND_CULTURE
+  NATURE_AND_OUTDOOR
+  SHOPPING_AND_LIFESTYLE
+  EVENTS_AND_EXPERIENCE
+}
+
+// -------------------- User --------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Mtoko-specific relations
+  role    Role     @default(USER) // Role for access control (e.g., dashboard permissions)
+  reviews Review[] // Renamed from Comment to align with uploaded schema
+
+  bookings    Booking[]
+  savedPlaces SavedPlace[]
+  likes       PlaceLike[]
+
+  ownedPlaces   Place[] // Places owned by this user (for editing)
+  Authenticator Authenticator[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+// ===== Places =====
+// -------------------- Place --------------------
+model Place {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  location    String
+  latitude    Float? // Optional from uploaded schema
+  longitude   Float? // Optional from uploaded schema
+  moods       Mood[] // Array of moods for multiple values (e.g., ROMANTIC and BUSINESS)
+  imageUrls   String[] // Array of image URLs from uploaded schema
+  likes       Int      @default(0)
+  priceMin    Int? // Optional from main schema
+  priceMax    Int? // Optional from main schema
+  ownerId     String? // Optional foreign key to owner
+  owner       User?    @relation(fields: [ownerId], references: [id])
+
+  features            Feature[]
+  rules               Rule[]
+  reviews             Review[] // Renamed from Comment
+  savedBy             SavedPlace[]
+  menuItems           MenuItem[] // For AI food suggestions
+  bookings            Booking[]
+  placeMainCategories PlaceMainCategory[] // Many-to-many with MainCategory
+  placeSubCategories  PlaceSubCategory[] // Many-to-many with SubCategory
+
+  placeLikes PlaceLike[] // Relation for likes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==================== PlaceLike ====================
+model PlaceLike {
+  id        String   @id @default(uuid())
+  userId    String
+  placeId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, placeId])
+}
+
+// -------------------- Feature --------------------
+model Feature {
+  id      String @id @default(cuid())
+  name    String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String
+}
+
+// -------------------- Rule --------------------
+model Rule {
+  id      String @id @default(cuid())
+  text    String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String
+}
+
+// -------------------- Review --------------------
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int // 1–5 stars from uploaded schema
+  comment   String? // Optional comment from uploaded schema
+  createdAt DateTime @default(now())
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String
+}
+
+// -------------------- SavedPlace --------------------
+model SavedPlace {
+  id      String @id @default(uuid())
+  userId  String
+  placeId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, placeId])
+}
+
+// -------------------- MenuItem --------------------
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String? // For AI: detailed text for suggestions
+  price       Int? // Optional: some items may be priced variably
+  tags        String[] // New: Array of tags for AI filtering (e.g., "vegetarian", "spicy", "gluten-free")
+
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -------------------- Booking --------------------
+model Booking {
+  id     String         @id @default(cuid())
+  date   DateTime // Booking date/time (full timestamp for precision)
+  status BookingStatus? // Optional enum: e.g., Pending, Confirmed
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  place   Place  @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, placeId, date]) // Prevent duplicates per user/place/time
+}
+
+// -------------------- MainCategory --------------------
+model MainCategory {
+  id                  String              @id @default(cuid())
+  name                MainCategoryEnum    @unique
+  subCategories       SubCategory[]
+  placeMainCategories PlaceMainCategory[]
+}
+
+// -------------------- SubCategory --------------------
+model SubCategory {
+  id             String       @id @default(cuid())
+  name           String
+  imageUrl       String? // Optional image for UI
+  mainCategory   MainCategory @relation(fields: [mainCategoryId], references: [id])
+  mainCategoryId String
+
+  placeSubCategories PlaceSubCategory[]
+}
+
+// -------------------- Junction Tables --------------------
+model PlaceMainCategory {
+  id             String       @id @default(cuid())
+  place          Place        @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId        String
+  mainCategory   MainCategory @relation(fields: [mainCategoryId], references: [id], onDelete: Cascade)
+  mainCategoryId String
+
+  @@unique([placeId, mainCategoryId]) // Prevents duplicate links
+  @@map("PlaceMainCategory")
+}
+
+model PlaceSubCategory {
+  id            String      @id @default(cuid())
+  place         Place       @relation(fields: [placeId], references: [id], onDelete: Cascade)
+  placeId       String
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+  subCategoryId String
+
+  @@unique([placeId, subCategoryId]) // Prevents duplicate links
+  @@map("PlaceSubCategory") // Ensure exact table name
+}
