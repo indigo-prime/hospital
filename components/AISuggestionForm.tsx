@@ -1,5 +1,8 @@
 "use client";
 
+
+// this is a comment
+
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { useState, useEffect, useRef } from 'react';
@@ -11,11 +14,11 @@ export default function AISuggestionForm() {
     const [priceRange, setPriceRange] = useState([3000, 7000]);
     const [sliderDirection, setSliderDirection] = useState('');
     const [ratings, setRatings] = useState({
-        '5 stars': false,
-        '4 stars': false,
-        '3 stars': false,
-        '2 stars': false,
-        '1 star': false,
+        'Chicken': false,
+        'Sea food': false,
+        'Rice': false,
+        'Ugali': false,
+        'Meat': false,
     });
     const [focusedSection, setFocusedSection] = useState('');
 
@@ -83,7 +86,7 @@ export default function AISuggestionForm() {
                 >
                     <div className="absolute top-[-1px] left-[-1px] w-[calc(100%+2px)] h-[10px] bg-mtoko-primary rounded-t-lg" />
                     <h1 className="font-['Roboto',_sans-serif] text-[32px] font-normal text-mtoko-dark leading-[135%]">
-                        MTOKO
+                        MTOKO AI
                     </h1>
                     <p className="font-['Roboto',_sans-serif] text-[14px] text-mtoko-dark mt-3">
                         Hi there! "Pick your vibe: set your budget, choose your spot, filter by fun, match features, and let
@@ -135,7 +138,7 @@ export default function AISuggestionForm() {
                     >
                         <label className="block text-mtoko-primary text-[16px] mb-2">Ratings *</label>
                         <ul className="list-none p-5 flex flex-wrap gap-2">
-                            {['5 stars', '4 stars', '3 stars', '2 stars', '1 star'].map((rating) => (
+                            {['Chicken', 'Sea food', 'Rice', 'Ugali', 'Meat'].map((rating) => (
                                 <li key={rating} className="inline">
                                     <input
                                         type="checkbox"
@@ -159,7 +162,7 @@ export default function AISuggestionForm() {
 
                     {/* Submit Button */}
                     <button type="submit" className="bg-mtoko-primary text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 hover:bg-mtoko-secondary">
-                        Take Me There
+                        Lets see More
                     </button>
                 </form>
             </div>

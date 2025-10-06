@@ -1,7 +1,7 @@
 import type {Metadata} from "next";
-import "../../styles/globals.css";
-import Header from '../../components/Header';
-import Filter from '../../components/Filter';
+import "../styles/globals.css";
+import Header from '../components/Header';
+import Filter from '../components/Filter';
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import {config} from "@fortawesome/fontawesome-svg-core";
 import {auth} from "@/lib/auth";
@@ -19,14 +19,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
         <body className="font-poppins bg-mtoko-dark">
-        <div className="app-wrapper">
-          <SessionProvider>
-            <Header/>
 
-            <Filter/>
             {children}
-          </SessionProvider>
-        </div>
+
         </body>
         </html>
     );

@@ -1,5 +1,5 @@
 "use client";
-import { auth, signOut, signIn } from "@/auth";
+
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -22,10 +22,11 @@ import {
     IoSettingsOutline,
     IoLogOutOutline,
 } from 'react-icons/io5';
+import { SignOut } from "@/components/sign-out";
+import {useSession, signOut, SessionProvider} from "next-auth/react";
 
-const Header =async ()=> {
-    const session = await auth();
-
+export default function Header() {
+    const { data: session } = useSession();
     // Dropdown states
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAboutOpen, setIsAboutOpen] = useState(false);
@@ -48,6 +49,7 @@ const Header =async ()=> {
     }, []);
 
     return (
+        <SessionProvider>
         <header className="fixed top-0 left-0 w-full bg-gradient-to-br from-mtoko-light via-mtoko-secondary to-mtoko-primary py-[10px] z-[100] shadow-[0_4px_12px_rgba(0,0,0,0.15)] rounded-b-[16px]">
             <div className="max-w-[975px] mx-auto flex justify-between items-center px-[20px]">
                 {/* Logo */}
@@ -93,7 +95,7 @@ const Header =async ()=> {
                                     className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
                                 >
                                     <IoFastFoodOutline className="text-[16px]" />
-                                    <span>Food</span>
+                                    <span>Food & Restaurants</span>
                                 </Link>
                                 <Link
                                     href="/category/family"
@@ -107,14 +109,35 @@ const Header =async ()=> {
                                     className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
                                 >
                                     <IoMoonOutline className="text-[16px]" />
-                                    <span>Night Life</span>
+                                    <span>NightLife & Bars</span>
                                 </Link>
                                 <Link
                                     href="/category/events"
                                     className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
                                 >
                                     <IoCalendarOutline className="text-[16px]" />
-                                    <span>Events</span>
+                                    <span>Arts & Culture</span>
+                                </Link>
+                                <Link
+                                    href="/category/events"
+                                    className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
+                                >
+                                    <IoCalendarOutline className="text-[16px]" />
+                                    <span>Nature & Outdoor</span>
+                                </Link>
+                                <Link
+                                    href="/category/events"
+                                    className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
+                                >
+                                    <IoCalendarOutline className="text-[16px]" />
+                                    <span>Shopping & Lifestyle</span>
+                                </Link>
+                                <Link
+                                    href="/category/events"
+                                    className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
+                                >
+                                    <IoCalendarOutline className="text-[16px]" />
+                                    <span>Events & Experiences</span>
                                 </Link>
                             </div>
                         )}
@@ -164,7 +187,7 @@ const Header =async ()=> {
                             className="text-mtoko-light hover:text-mtoko-accent focus:outline-none"
                         >
                             <img
-                                src="/profile-placeholder.png"
+                                src={session?.user?.image}
                                 alt="Profile"
                                 className="w-[24px] h-[24px] rounded-full"
                             />
@@ -177,7 +200,7 @@ const Header =async ()=> {
                                     className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
                                 >
                                     <IoPersonOutline className="text-[16px]" />
-                                    <span>Profile</span>
+                                    <span>profile</span>
                                 </Link>
                                 <Link
                                     href="/group-chats"
@@ -200,18 +223,13 @@ const Header =async ()=> {
                                     <IoSettingsOutline className="text-[16px]" />
                                     <span>Settings</span>
                                 </Link>
-                                <Link
-                                    href="/logout"
-                                    className="flex items-center gap-[10px] px-[12px] py-[8px] text-mtoko-light text-[14px] font-normal rounded-[4px] hover:bg-mtoko-dark/50 hover:scale-105 transition-transform"
-                                >
-                                    <IoLogOutOutline className="text-[16px]" />
-                                    <span>Logout</span>
-                                </Link>
+                                <SignOut />
                             </div>
                         )}
                     </div>
                 </nav>
             </div>
         </header>
+        </SessionProvider>
     );
 }

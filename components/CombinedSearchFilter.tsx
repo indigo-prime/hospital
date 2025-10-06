@@ -126,7 +126,7 @@ export const CombinedSearchFilter = () => {
             </section>
 
             {/* Location Name and Mood Filters in one row */}
-            <Card className="mb-8 shadow-soft">
+            <Card className="mb-8 shadow-soft max-w-[935px] mx-auto">
                 <CardContent className="p-6">
                     <div className="flex items-center gap-2 mb-4">
                         <Filter className="w-5 h-5 text-sunset-orange" />

@@ -6,15 +6,19 @@ import { IoCafeOutline } from 'react-icons/io5';
 export default function Filter() {
     // Sample filter data (replace with API or props in production)
     const filters = [
-        { name: 'Drinks', image: '/filters/drinks.jpg', link: '/category/food/drinks' },
-        { name: 'Chicken', image: '/filters/chicken.jpg', link: '/category/food/chicken' },
-        { name: 'Pizza', image: '/filters/pizza.jpg', link: '/category/food/pizza' },
-        { name: 'Burger', image: '/filters/burger.jpg', link: '/category/food/burger' },
-        { name: 'Seafood', image: '/filters/seafood.jpg', link: '/category/food/seafood' },
-        { name: 'Dessert', image: '/filters/desert.jpg', link: '/category/food/dessert' },
+        { name: 'Hotel', image: '/filters/drinks.jpg', link: '/category/food/drinks' },
+        { name: 'Restaurants', image: '/filters/chicken.jpg', link: '/category/food/chicken' },
+        { name: 'Caffe', image: '/filters/pizza.jpg', link: '/category/food/pizza' },
+        { name: 'Mama Ntilie', image: '/filters/burger.jpg', link: '/category/food/burger' },
+        { name: 'Desserts spots', image: '/filters/seafood.jpg', link: '/category/food/seafood' },
+        { name: 'BBQ & Grills', image: '/filters/desert.jpg', link: '/category/food/dessert' },
         { name: 'Ice Cream', image: '/filters/ice-cream.jpg', link: '/category/food/ice-cream' },
-        { name: 'Coffee', image: '/filters/coffee.jpg', link: '/category/food/coffee' },
-        { name: 'Fries', image: '/filters/fries.jpg', link: '/category/food/fries' },
+        { name: 'Fast Food', image: '/filters/coffee.jpg', link: '/category/food/coffee' },
+        { name: 'SeaFoods', image: '/filters/fries.jpg', link: '/category/food/fries' },
+
+        { name: 'Cultural Food', image: '/filters/ice-cream.jpg', link: '/category/food/ice-cream' },
+        { name: 'Bites', image: '/filters/coffee.jpg', link: '/category/food/coffee' },
+        { name: 'Fruits', image: '/filters/fries.jpg', link: '/category/food/fries' },
     ];
 
     return (
